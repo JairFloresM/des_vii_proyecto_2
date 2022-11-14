@@ -1,0 +1,90 @@
+---Crear nota----
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_crear_nota`(IN `titulo` VARCHAR(255), IN `fecha` DATE, IN `hora` TIME, IN `ubicacion` VARCHAR(255), IN `correo` VARCHAR(255), IN `repetir` TINYINT, IN `tiempo_repetir` TIME, IN `actividad` TINYINT)
+BEGIN
+    INSERT INTO notas VALUES (null, titulo, fecha, hora, ubicacion, correo, repetir, tiempo_repetir, actividad);
+END$$
+DELIMITER ;
+
+---Mostrar notas---
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_mostrar_nota`()
+BEGIN
+    select n.id, n.titulo, n.fecha, n.hora, n.ubicacion, n.correo, n.repetir, 
+            n.tiempo_repetir_hora, a.descripcion from notas n 
+        INNER JOIN actividades a ON a.id = n.id_actividad;
+END$$
+DELIMITER ;
+
+---Eliminar nota---
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_eliminar_nota`(
+    IN param_id INT
+)
+BEGIN
+    DELETE FROM notas   
+        WHERE id = param_id;
+END$$
+DELIMITER ;
+
+----Mostrar actividades----
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_mostrar_actividades`()
+BEGIN
+	SELECT * FROM actividades;
+
+END$$
+DELIMITER ;
+
+-----actualizar notas-----
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_actualizar_nota`(IN `param_id` SMALLINT, IN `param_titulo` VARCHAR(255), IN `param_fecha` DATE, IN `param_hora` TIME, IN `param_ubicacion` VARCHAR(255), IN `param_correo` VARCHAR(255), IN `param_repetir` SMALLINT, IN `param_tiem_rep_hora` TIME, IN `param_actividad` SMALLINT)
+BEGIN
+	UPDATE notas SET titulo=param_titulo, fecha=param_fecha, hora=param_hora, ubicacion=param_ubicacion, correo=param_correo, repetir=param_repetir, tiempo_repetir_hora=param_tiem_rep_hora, id_actividad=param_actividad WHERE id= param_id;
+END$$
+DELIMITER ;
+
+----Mostrar por id(notas)-----
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_mostrar_por_id`(IN `param_id` SMALLINT)
+BEGIN
+    select n.id, n.titulo, n.fecha, n.hora, n.ubicacion, n.correo, n.repetir, 
+            n.tiempo_repetir_hora, a.descripcion from notas n 
+        INNER JOIN actividades a ON a.id = n.id_actividad WHERE n.id=param_id;
+END$$
+DELIMITER ;
+
+------Mostrar notas del dia actual-------
+DELIMITER $$
+CREATE PROCEDURE `sp_notas_hoy`()
+BEGIN
+    select n.id, n.titulo, n.fecha, n.hora, n.ubicacion, n.correo, n.repetir, 
+            n.tiempo_repetir_hora, a.descripcion from notas n 
+        INNER JOIN actividades a ON a.id = n.id_actividad
+            where fecha = DATE_FORMAT(NOW(), '%y-%m-%d');
+END$$
+DELIMITER ;
+
+
+
+------Mostrar reporte por filtro -------------
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_mostrar_por_filtro`(
+        IN campo VARCHAR(255),
+        IN dato VARCHAR(255)
+    )
+BEGIN
+    IF campo <> 'descripcion' THEN
+        set @body = CONCAT('select n.id, n.titulo, n.fecha, n.hora, n.ubicacion, n.correo, n.repetir, n.tiempo_repetir_hora, a.descripcion from notas n INNER JOIN actividades a ON a.id = n.id_actividad WHERE CAST(',
+         campo, '(n.fecha) as char) = ', dato, ';');
+    END IF;
+    
+    IF campo = 'descripcion' THEN
+        set @body = CONCAT('select n.id, n.titulo, n.fecha, n.hora, n.ubicacion, n.correo, n.repetir, n.tiempo_repetir_hora, a.descripcion from notas n INNER JOIN actividades a ON a.id = n.id_actividad WHERE a.descripcion = "', dato, '";');
+    END IF;
+        
+      PREPARE stmnt FROM @body;
+      EXECUTE stmnt;
+END$$
+DELIMITER ;
+
