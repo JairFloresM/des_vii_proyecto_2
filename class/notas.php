@@ -4,6 +4,7 @@ class Nota
 {
 
     private $url_notas = "http://localhost/laboratorios_dsvii/proyecto_2/API/003_actividades/";
+    //private $url_notas = "http://localhost:9090/proyecto_2/API/003_actividades/";
 
     public function mostrar_notas()
     {
@@ -37,47 +38,56 @@ class Nota
     }
 
 
-    //VAINA DE RANSES
+    public function agregar_nota($data)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, 1);
+        if ($data) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        }
+        curl_setopt($ch, CURLOPT_URL, $this->url_notas . 'crear.php');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'APIKEY: 111111111111111111111',
+            'Content-Type: application/json',
+        ));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        // EXECUTE:
+        $resultado = curl_exec($ch);
+    }
+
+    public function mostrar_actividades()
+    {
+        $ruta = $this->url_notas . 'actividades.php';
+        $data = json_decode(file_get_contents($ruta), true);
+        $result = $data["records"];
+        return $result;
+    }
+
+
 
     public function filtar_id($id)
     {
-        $instruccion = "CALL sp_mostrar_por_id('" . $id . "')";
-        $consulta = $this->_db->query($instruccion);
-        $resultado = $consulta->fetch_all(MYSQLI_ASSOC);
-
-        if ($resultado) {
-            return $resultado;
-            $resultado->close();
-            $this->_db->close();
-        }
+        $ruta = $this->url_notas . 'leer_uno.php?id=' . $id;
+        $data = json_decode(file_get_contents($ruta), true);
+        return $data;
     }
 
-    public function editar($id, $titulo, $fecha, $hora, $ubicacion, $correo, $repetir, $tiemporep, $actividad)
+    public function editar($data, $id)
     {
-        $instruccion = "CALL sp_actualizar_nota('" . $id . "','" . $titulo . "','" . $fecha . "','" . $hora . "','" . $ubicacion . "','" . $correo . "','" . $repetir . "','" . $tiemporep . "','" . $actividad . "')";
-
-        $actualiza = $this->_db->query($instruccion);
-
-
-        if ($actualiza) {
-            return $actualiza;
-            $actualiza->close();
-            $this->_db->close();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, 1);
+        if ($data) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
-    }
-
-    public function agregar_nota($titulo, $fecha, $hora, $ubicacion, $correo, $repetir, $tiemporep, $actividad)
-    {
-        $instruccion = "CALL sp_crear_nota('" . $titulo . "','" . $fecha . "','" . $hora . "','" . $ubicacion . "','" . $correo . "','" . $repetir . "','" . $tiemporep . "','" . $actividad . "')";
-
-
-        $actualiza = $this->_db->query($instruccion);
-
-
-        if ($actualiza) {
-            return $actualiza;
-            $actualiza->close();
-            $this->_db->close();
-        }
+        curl_setopt($ch, CURLOPT_URL, $this->url_notas . 'actualizar.php?id=' . $id);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'APIKEY: 111111111111111111111',
+            'Content-Type: application/json',
+        ));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        // EXECUTE:
+        $resultado = curl_exec($ch);
     }
 }

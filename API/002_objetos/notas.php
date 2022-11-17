@@ -4,6 +4,15 @@ class Notas
     // conexion de base de datos y tabla productos
     private $conn;
 
+    public $titulo;
+    public $fecha;
+    public $hora;
+    public $ubicacion;
+    public $correo;
+    public $repetir;
+    public $tiemporep;
+    public $actividad;
+
     // constructor con $db como conexion a base de datos
     public function __construct($db)
     {
@@ -61,28 +70,86 @@ class Notas
 
 
     // crear producto
-    function crear()
+    function crear($titulo, $fecha, $hora, $ubicacion, $correo, $repetir, $tiemporep, $actividad)
     {
-        // query para insertar un registro
-        $query = "INSERT INTO
-            " . $this->nombre_tabla . "
-            SET
-            nombre=:nombre, precio=:precio, descripcion=:descripcion, categoria_id=:categoria_id, creado=:creado";
-        // preparar query
+        // query para seleccionar todos
+        $query = "CALL sp_crear_nota(?, ?, ?, ?, ?, ?, ?, ?)";
+        // sentencia para preparar query
         $stmt = $this->conn->prepare($query);
-        // sanitize
-        $this->nombre = htmlspecialchars(strip_tags($this->nombre));
-        $this->precio = htmlspecialchars(strip_tags($this->precio));
-        $this->descripcion = htmlspecialchars(strip_tags($this->descripcion));
-        $this->categoria_id = htmlspecialchars(strip_tags($this->categoria_id));
-        $this->creado = htmlspecialchars(strip_tags($this->creado));
-        // bind values
-        $stmt->bindParam(":nombre", $this->nombre);
-        $stmt->bindParam(":precio", $this->precio);
-        $stmt->bindParam(":descripcion", $this->descripcion);
-        $stmt->bindParam(":categoria_id", $this->categoria_id);
-        $stmt->bindParam(":creado", $this->creado);
-        // execute query
+        $stmt->bindParam(1, htmlspecialchars($this->titulo));
+        $stmt->bindParam(2, htmlspecialchars($this->fecha));
+        $stmt->bindParam(3, htmlspecialchars($this->hora));
+        $stmt->bindParam(4, htmlspecialchars($this->ubicacion));
+        $stmt->bindParam(5, htmlspecialchars($this->correo));
+        $stmt->bindParam(6, htmlspecialchars($this->repetir));
+        $stmt->bindParam(7, $this->tiemporep, PDO::PARAM_STR);
+        $stmt->bindParam(8, htmlspecialchars($this->actividad));
+
+        // ejecutar query
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+    }
+
+    function actividades()
+    {
+        // query para seleccionar todos
+        $query = "CALL sp_mostrar_actividades()";
+        // sentencia para preparar query
+        $stmt = $this->conn->prepare($query);
+        // ejecutar query
+        $stmt->execute();
+        return $stmt;
+    }
+
+    function leer_uno($id)
+    {
+        // query para seleccionar todos
+        $query = "CALL sp_mostrar_por_id(?)";
+        // sentencia para preparar query
+        $stmt = $this->conn->prepare($query);
+        // ejecutar query
+        $stmt->bindParam(1, htmlspecialchars($id));
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+
+        $data = array(
+            "id" => $row["id"],
+            "titulo" => $row["titulo"],
+            "fecha" => $row["fecha"],
+            "hora" => $row["hora"],
+            "ubicacion" => $row["ubicacion"],
+            "repetir" => $row["repetir"],
+            "correo" => $row["correo"],
+            "tiempo_repetir_hora" => $row["tiempo_repetir_hora"],
+            "descripcion" => $row["descripcion"]
+        );
+
+        return $data;
+    }
+
+
+
+    function actualizar($id)
+    {
+        // query para seleccionar todos
+        $query = "CALL sp_actualizar_nota(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // sentencia para preparar query
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, htmlspecialchars($id));
+        $stmt->bindParam(2, htmlspecialchars($this->titulo));
+        $stmt->bindParam(3, htmlspecialchars($this->fecha));
+        $stmt->bindParam(4, htmlspecialchars($this->hora));
+        $stmt->bindParam(5, htmlspecialchars($this->ubicacion));
+        $stmt->bindParam(6, htmlspecialchars($this->correo));
+        $stmt->bindParam(7, htmlspecialchars($this->repetir));
+        $stmt->bindParam(8, $this->tiemporep, PDO::PARAM_STR);
+        $stmt->bindParam(9, htmlspecialchars($this->actividad));
+
+        // ejecutar query
         if ($stmt->execute()) {
             return true;
         }

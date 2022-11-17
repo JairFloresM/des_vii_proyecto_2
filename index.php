@@ -26,7 +26,7 @@
     </header>
 
     <main class="main">
-        <h1>Actividades Para hoyassdsadsad</h1>
+        <h1>Actividades Para hoy</h1>
 
         <div class="nav">
             <a href="agregar.php">Agregar Actividad</a>

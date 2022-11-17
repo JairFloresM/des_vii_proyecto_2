@@ -12,10 +12,9 @@
 
 <body>
     <?php
-    include("class/actividades.php");
     include("class/notas.php");
 
-    $obj_actividades = new actividad();
+    $obj_actividades = new Nota();
     $actividades = $obj_actividades->mostrar_actividades();
     ?>
     <main class="contenedor">
@@ -26,29 +25,29 @@
         <div>
             <form action="agregar.php" method="post" class="formulario">
                 <div class="campo">
-                Titulo: <input type="text" name="titulo" class="campo_form"><br>
+                    Titulo: <input type="text" name="titulo" class="campo_form"><br>
                 </div>
-                <div class="campo"> 
-                    Fecha: <input type="date" name="fecha" class="campo_form"><br>   
+                <div class="campo">
+                    Fecha: <input type="date" name="fecha" class="campo_form"><br>
                 </div>
-                <div class="campo">   
+                <div class="campo">
                     Hora: <input type="time" name="hora" class="campo_form"><br>
                 </div>
-                <div class="campo">  
+                <div class="campo">
                     Ubicacion: <input type="text" name="ubicacion" class="campo_form"><br>
                 </div>
-                <div class="campo">     
+                <div class="campo">
                     Correo: <input type="email" name="correo" class="campo_form"><br>
                 </div>
-                <div class="campo">    
+                <div class="campo">
                     Repetir: <input type="text" name="repetir" class="campo_form"><br>
                 </div>
-                <div class="campo">   
+                <div class="campo">
                     Tiempo de Repeticion: <input type="time" name="tiem_repetir" class="campo_form"><br>
                 </div>
-                <div class="campo">     
+                <div class="campo">
                     Actividad:
-                    <select name="actividad"  class='campo_form'>
+                    <select name="actividad" class='campo_form'>
 
                         <?php
                         //lista todas las actividades en la base de datos (si se actualiza la base de datos de actualiza automaticamente)
@@ -58,7 +57,7 @@
                         ?>
                     </select><br>
                 </div>
-                <div class="campo">    
+                <div class="campo">
                     <input type="submit" value="Agregar" name="enviar" class="boton">
                 </div>
             </form>
@@ -67,7 +66,17 @@
         //envia los datos a la base de datos
         if (array_key_exists('enviar', $_POST)) {
             $obj_notas = new Nota();
-            $obj_notas->agregar_nota($_REQUEST['titulo'], $_REQUEST['fecha'], $_REQUEST['hora'], $_REQUEST['ubicacion'], $_REQUEST['correo'], $_REQUEST['repetir'], $_REQUEST['tiem_repetir'], $_REQUEST['actividad']);
+            $arr = array(
+                "titulo" => $_REQUEST['titulo'],
+                "fecha" => $_REQUEST['fecha'],
+                "hora" => $_REQUEST['hora'],
+                "ubicacion" => $_REQUEST['ubicacion'],
+                "correo" => $_REQUEST['correo'],
+                "repetir" => $_REQUEST['repetir'],
+                "tiem_repetir" => $_REQUEST['tiem_repetir'],
+                "actividad" => $_REQUEST['actividad']
+            );
+            $obj_notas->agregar_nota(json_encode($arr));
             echo "Se envio correctamente";
         }
         ?>
