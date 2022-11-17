@@ -3,7 +3,7 @@
 class Nota
 {
 
-    private $url_notas = "http://localhost/laboratorios_dsvii/proyecto_2/API/003_actividades/";
+    private $url_notas = "http://localhost/desarrollovii/des_vii_proyecto_2/API/003_actividades/";
 
     public function mostrar_notas()
     {
@@ -39,31 +39,21 @@ class Nota
 
     //VAINA DE RANSES
 
-    public function filtar_id($id)
-    {
-        $instruccion = "CALL sp_mostrar_por_id('" . $id . "')";
-        $consulta = $this->_db->query($instruccion);
-        $resultado = $consulta->fetch_all(MYSQLI_ASSOC);
-
-        if ($resultado) {
-            return $resultado;
-            $resultado->close();
-            $this->_db->close();
-        }
+    public function filtar_id($id){
+        $ruta=$this->url_notas.'filtrar_id.php?id='. $id;
+        $data = json_decode(file_get_contents($ruta), true);
+        $result = $data["records"];
+        return $result;
     }
 
-    public function editar($id, $titulo, $fecha, $hora, $ubicacion, $correo, $repetir, $tiemporep, $actividad)
-    {
-        $instruccion = "CALL sp_actualizar_nota('" . $id . "','" . $titulo . "','" . $fecha . "','" . $hora . "','" . $ubicacion . "','" . $correo . "','" . $repetir . "','" . $tiemporep . "','" . $actividad . "')";
+    public function editar($id, $titulo, $fecha, $hora, $ubicacion, $correo, $repetir, $tiem_repetir, $actividad){
 
-        $actualiza = $this->_db->query($instruccion);
+        $ruta=$this->url_notas.'editar.php?id='. $id .'&titulo='.$titulo.'&fecha='.$fecha.'&hora='.$hora.'&ubicacion='.$ubicacion.'&correo='.$correo.'&repetir='.$repetir.'&tiem_repetir='.$tiem_repetir.'&actividad'.$actividad;
+        $data = json_decode(file_get_contents($ruta), true);
+        $result = $data["records"];
+        return $result;
 
-
-        if ($actualiza) {
-            return $actualiza;
-            $actualiza->close();
-            $this->_db->close();
-        }
+        
     }
 
     public function agregar_nota($titulo, $fecha, $hora, $ubicacion, $correo, $repetir, $tiemporep, $actividad)

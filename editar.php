@@ -21,9 +21,9 @@
             $obj_notas=new nota();
             
             //clase actividades
-            include("class/actividades.php");
-            $obj_actividades=new actividad();
-            $actividades=$obj_actividades->mostrar_actividades();
+            //include("class/actividades.php");
+            //$obj_actividades=new actividad();
+            //$actividades=$obj_actividades->mostrar_actividades();
             if(array_key_exists('enviar', $_POST)){
                 
                 $obj_notas->editar($_REQUEST['id'],$_REQUEST['titulo'],$_REQUEST['fecha'],$_REQUEST['hora'],$_REQUEST['ubicacion'],$_REQUEST['correo'],$_REQUEST['repetir'],$_REQUEST['tiem_repetir'],$_REQUEST['actividad']);
@@ -84,13 +84,9 @@
                 <div class="campo">     
                     Actividad:
                     <select name="actividad"  class='campo_form'>
-
-                        <?php
-                        //lista todas las actividades en la base de datos (si se actualiza la base de datos de actualiza automaticamente)
-                        foreach ($actividades as $resultado_a) {
-                            print("<option value='" . $resultado_a['id'] . "'>" . $resultado_a['descripcion'] . "</option>");
-                        }
-                        ?>
+                        <option value="1">eso</option>
+                        
+                       
                     </select><br>
                 </div>
                 <div class="campo">    

@@ -117,4 +117,40 @@ class Notas
         $this->categoria_id = $row['categoria_id'];
         $this->categoria_desc = $row['categoria_desc'];
     }
+
+    //filtrar por id
+    function filtrar_id($id){
+        $query = "CALL sp_mostrar_por_id(?)";
+        // sentencia para preparar query
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $id);
+        
+        // ejecutar query
+        $stmt->execute();
+        return $stmt;
+    }
+    //editar
+    function editar($id, $titulo, $fecha, $hora, $ubicacion, $correo, $repetir, $tiemporep, $actividad){
+        $query = "CALL sp_actualizar_nota(?,?,?,?,?,?,?,?,?)";
+        // sentencia para preparar query
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $id);
+        $stmt->bindParam(2, $titulo);
+        $stmt->bindParam(3, $fecha);
+        $stmt->bindParam(4, $hora);
+        $stmt->bindParam(5, $ubicacion);
+        $stmt->bindParam(6, $correo);
+        $stmt->bindParam(7, $repetir);
+        $stmt->bindParam(8, $tiemporep);
+        $stmt->bindParam(9, $actividad);
+       
+    
+        // ejecutar query
+        if ($stmt->execute()) {
+            return true;
+        }
+        return false;
+        
+       
+    }
 }
